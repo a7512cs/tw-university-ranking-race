@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大學錄取分數 Race（101–115）</title>
+<style>
+  :root {
+    --color-text: #1c2333;
+    --color-muted: #6b7385;
+    --row-height: 27px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    background: #fff;
+    color: var(--color-text);
+  }
+  header { padding: 16px 20px 10px; }
+  .titlebar { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 20px; font-weight: 700; }
+  h1 .sub { font-size: 13px; font-weight: 400; color: var(--color-muted); margin-left: 8px; }
+  #tabs { display: inline-flex; gap: 4px; }
+  .tab {
+    font-size: 14px; padding: 6px 16px; border: 1px solid #cfd4e0;
+    border-bottom-width: 2px; border-radius: 8px 8px 0 0; background: #f6f7fa;
+    cursor: pointer; color: var(--color-muted);
+  }
+  .tab.active {
+    background: #fff; color: var(--color-text); font-weight: 700;
+    border-bottom-color: #fff;
+  }
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: 10px; margin-top: 12px;
+  }
+  #playBtn {
+    font-size: 14px; padding: 6px 16px; border: 1px solid #cfd4e0;
+    border-radius: 6px; background: #f6f7fa; cursor: pointer; min-width: 88px;
+  }
+  #playBtn:hover { background: #eceef4; }
+  #slider { flex: 1; min-width: 200px; accent-color: #3273dc; }
+  select {
+    font-size: 13px; padding: 5px 8px; border: 1px solid #cfd4e0;
+    border-radius: 6px; background: #fff; max-width: 220px;
+  }
+  .chip {
+    font-size: 13px; padding: 5px 12px; border: 1px solid #cfd4e0;
+    border-radius: 999px; background: #fff; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; color: var(--color-muted);
+  }
+  .chip .dot { width: 10px; height: 10px; border-radius: 50%; opacity: .35; }
+  .chip.active { color: var(--color-text); border-color: #9aa3b8; background: #f6f7fa; }
+  .chip.active .dot { opacity: 1; }
+  #chips { display: inline-flex; gap: 6px; }
+  #race { position: relative; padding: 14px 20px 8px; overflow: hidden; min-height: 420px; }
+  #rows { position: relative; z-index: 1; transition: height .4s ease; }
+  .row {
+    position: absolute; left: 0; right: 0; height: var(--row-height);
+    display: flex; align-items: center;
+    transition: transform .45s ease, opacity .3s ease;
+    will-change: transform;
+  }
+  .row.hidden { opacity: 0; visibility: hidden; }
+  .row .name {
+    flex: none; width: 205px; text-align: right; padding-right: 10px;
+    font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  body.view-cross .row .name { width: 255px; }
+  .row .track { flex: 1; display: flex; align-items: center; min-width: 0; }
+  .row .bar { height: 18px; border-radius: 3px; min-width: 2px; }
+  .row .val {
+    flex: none; font-size: 11.5px; margin-left: 6px; color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  #yearBox {
+    position: absolute; right: 28px; bottom: 14px; text-align: right;
+    z-index: 2; user-select: none; pointer-events: none;
+    background: rgba(255, 255, 255, .72); padding: 8px 12px; border-radius: 10px;
+    backdrop-filter: blur(2px);
+  }
+  #bigYear { font-size: 80px; font-weight: 800; line-height: 1; color: #e2e6ef; }
+  #adYear { font-size: 15px; color: #c3c9d8; margin-top: 2px; }
+  #eraNote { font-size: 13px; color: var(--color-muted); margin-top: 8px; }
+  #eraNote.flash { color: #b3261e; font-weight: 700; font-size: 15px; }
+  footer {
+    padding: 10px 20px 18px; font-size: 12px; color: var(--color-muted);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <div id="tabs"></div>
+    <h1>大學錄取分數排名 Race
+      <span class="sub">101–115 學年度｜分發入學最低錄取「平均」分數</span>
+    </h1>
+  </div>
+  <div class="controls">
+    <button id="playBtn">▶ 播放</button>
+    <input id="slider" type="range" min="0" max="14000" value="0">
+    <select id="deptSelect" title="選擇科系"></select>
+    <label>顯示
+      <select id="topN">
+        <option value="10">前 10</option>
+        <option value="20" selected>前 20</option>
+        <option value="30">前 30</option>
+        <option value="50">前 50</option>
+        <option value="999">全部</option>
+      </select>
+    </label>
+    <div id="chips"></div>
+  </div>
+</header>
+<main id="race">
+  <div id="yearBox">
+    <div id="bigYear"></div>
+    <div id="adYear"></div>
+    <div id="eraNote"></div>
+  </div>
+  <div id="rows"></div>
+</main>
+<footer>
+  資料來源：www.com.tw 大學分發榜單（各系組錄取分數），取「錄取分數(平均)」括號內數字。
+  101–110 為指考（每科滿分 100 分）、111 起為分科測驗（每科 60 級分制），兩時代量尺不同，跨年僅排名可比較。
+  某系某年無資料（停招、改名、無人錄取）該年即不顯示；學校改名或合併（交大→陽明交大、屏教大→屏東大等）前後視為不同序列，名稱依來源網站當年標示。
+  跨校比較注意：各校同名科系的採計科目組合可能略有不同，「平均」已除以加權數、大致可比但非完全同一把尺。
+  想修改分類：用 Excel 編輯 data/category-map.csv（台大組別）或 data/dept-map.csv（跨校科系類型），
+  存檔後執行 python3 scripts/build_data.py（台大）或 python3 scripts/build_cross_data.py（跨校）重新產生網頁資料，再重新整理本頁。
+</footer>
+<script src="./data.js"></script>
+<script src="./data-cross.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>

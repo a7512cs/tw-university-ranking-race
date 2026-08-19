@@ -1,0 +1,12 @@
+# Raw fetched pages (77MB, regenerable via scripts/fetch.js)
+data/raw/
+
+# Browser profile created by scripts/fetch.js
+scripts/chrome-profile/
+
+# Node deps if fetch.js is run from the repo
+node_modules/
+package-lock.json
+
+.DS_Store
+__pycache__/
