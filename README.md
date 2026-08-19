@@ -59,18 +59,3 @@ node scripts/fetch.js "https://www.com.tw/exam/university_001_116.html" data/raw
 抓進 `data/raw/cross/uCCC_YYY.html`，重跑 build 即可。學校清單由檔案自動發現、
 校名讀自每頁標題；想要短一點的顯示名稱，可在 `scripts/build_cross_data.py` 的
 `SHORT_NAMES` 加一筆。
-
-## 踩過的坑
-
-- **Cloudflare**：該網站擋 curl、headless 瀏覽器、甚至一般 playwright（headed 也擋）。
-  只有 **patchright ＋ 真 Chrome ＋ headed 模式**過得了，抓的時候會短暫彈出
-  Chrome 視窗，屬正常現象。
-- **CJK 相容表意字**：部分頁面把 理／律／歷／數／療 等字編成相容碼位
-  （如 理 = U+F9E4），肉眼看起來一樣但字串比對不相等，會把同一個系
-  默默拆成兩條序列。共用解析器（`scripts/comtw.py`）已做 NFC 正規化，
-  動解析器時務必保留。
-- **量尺變更**：101–110 指考（每科滿分 100）、111 起分科測驗（每科 60 級分制）。
-  分數照原始值顯示，播到 111 年全場集體縮短是預期行為，頁面上有標註。
-- **學校改名／合併**：校名讀自每頁當年的標題，改名自動斷開序列
-  （交大→陽明交大在來源網站是 111 年切換、屏教大→屏東大、北市教大→北市大、
-  竹教大 105 後併入清大、025 陽明大學到 109 為止）。
